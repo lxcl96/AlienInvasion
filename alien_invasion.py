@@ -2,6 +2,7 @@ import sys
 import pygame
 from settins import Settings
 from ship import Ship
+from picture import Backgroud
 
 
 class AlienInvasion:
@@ -21,23 +22,50 @@ class AlienInvasion:
         """
         # Ship(self) self指向当前AlienInvasion实例，目的为了访问对象如screen
         self.ship = Ship(self)
+        self.backgroud = Backgroud()
+
+    def _check_events(self):
+        """响应按键和鼠标事件函数"""
+        # pygame.event.get()获取键盘或鼠标的操作，通过event来记录每一个操作
+        # 此处为一个事件循环，侦听事件并作出相应的操作
+        for event in pygame.event.get():
+            # 如果玩家点击了右上角的 x 事件
+            if event.type == pygame.QUIT:
+                # 退出游戏
+                sys.exit()
+            # 检测屏幕输入KEYDOWN (按下按键)事件
+            elif event.type == pygame.KEYDOWN:
+                # 获取事件值为，右方向键
+                if event.key == pygame.K_RIGHT:
+                    self.ship.moving_right = True
+                elif event.key == pygame.K_LEFT:
+                    self.ship.moving_left = True
+            # 此处为松开右方向键（KEYUP）
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_RIGHT:
+                    self.ship.moving_right = False
+                elif event.key == pygame.K_LEFT:
+                    self.ship.moving_left = False
+
+    def _update_screen(self):
+        """更屏幕刷新函数"""
+        # 设置窗口图标
+        self.screen.fill(self.settings.bg_color)
+        # 每次执行while 都会重绘一个新的屏幕窗口和飞船
+        pygame.display.set_icon(self.settings.logo)
+        self.ship.blitme()
+
+        # 展示窗口
+        self.screen.blit(self.backgroud.backgroud, (350, 150))
+        pygame.display.flip()
+
 
     def run_game(self):
         """开始游戏的主循环"""
         while True:
-            # pygame.event.get()获取键盘或鼠标的操作，通过event来记录每一个操作
-            # 此处为一个事件循环，侦听事件并作出相应的操作
-            for event in pygame.event.get():
-                # 如果玩家点击了右上角的 x 事件
-                if event.type == pygame.QUIT:
-                    # 退出游戏
-                    sys.exit()
-            # 每次执行while 都会重绘一个新的屏幕窗口和飞船
-            self.screen.fill(self.settings.bg_color)
-            self.ship.blitme()
-
-            # 展示窗口
-            pygame.display.flip()
+            self._check_events()
+            self.ship.update_right()
+            self._update_screen()
 
 
 if __name__ == '__main__':

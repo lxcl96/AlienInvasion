@@ -15,6 +15,19 @@ class Ship:
         # 对于每艘新飞船，都将其放在屏幕底部的中央
         self.rect.midbottom = self.screen_rect.midbottom    # 把屏幕底部位置给飞船
 
+        self.moving_right = False
+        self.moving_left = False
+    # 实现持续移动
+    def update_right(self):
+        """根据移动标志持续调整飞船位置向右"""
+        if self.moving_right:
+            self.rect.x += 1
+
+    def update_left(self):
+        """根据移动标志持续调整飞船位置向左"""
+        if self.moving_left:
+            self.rect.x -= 1
+
     def blitme(self):
         """在指定位置绘制飞船"""
         self.screen.blit(self.image, self.rect) # 使用图片，位置来绘制飞船self.rect矩形对象，self.rect.midbottom 矩形位置

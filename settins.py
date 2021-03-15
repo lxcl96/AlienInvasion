@@ -1,3 +1,6 @@
+import pygame
+
+
 class Settings:
     """存储游戏《外星人入侵》中所有设置的类"""
     def __init__(self):
@@ -6,3 +9,4 @@ class Settings:
         self.screen_width = 800
         self.screen_heigth = 600
         self.bg_color = (230, 230, 230)
+        self.logo = pygame.image.load('images/ship.bmp')
