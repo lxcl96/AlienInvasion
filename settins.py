@@ -7,6 +7,9 @@ class Settings:
         """初始化游戏的设置"""
         # 屏幕设置 宽度/高度/背景
         self.screen_width = 800
-        self.screen_heigth = 600
+        self.screen_height = 600
         self.bg_color = (230, 230, 230)
         self.logo = pygame.image.load('images/ship.bmp')
+
+        # 飞船设置
+        self.ship_speed = 3
