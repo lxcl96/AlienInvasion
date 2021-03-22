@@ -2,7 +2,6 @@ import sys
 import pygame
 from settins import Settings
 from ship import Ship
-from picture import Backgroud
 from bullet import Bullet
 from alien import Aliens
 
@@ -18,7 +17,7 @@ class AlienInvasion:
         # 创建一个宽1200px，高800px的窗口先显示图案
         self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
         # 创建一个全屏屏幕
-        #self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        # self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         # 获取全屏屏幕的长和宽复制到settings文件中
         # self.settings.screen_width = self.screen.get_rect().width
         # self.settings.screen_height = self.screen.get_rect().height
@@ -42,22 +41,40 @@ class AlienInvasion:
         # 创建一群外星人并计算一行可以容纳多少个外星人
         # 外星人间的间距为一个外星人的宽度
         alien = Aliens(self)
-        # 标记外星人宽度
-        alien_width = alien.rect.width
+        # 标记外星人宽度, 高度
+        alien_width, alien_height = alien.rect.size
+        # alien_width = alien.rect.width
+        # alien_height = alien.rect.height
         # 计算屏幕可用宽度，两边各留空一个外星人的位置
         available_space_x = self.settings.screen_width - (2 * alien_width)
         # 计算容纳多少个外星人
         numbers_aliens_x = available_space_x // (2 * alien_width)
-        # 创建第一行外星人
-        for alien_number in range(numbers_aliens_x + 1):
-            # 创建一个外星人，并将其加入当前行
-            # 设置当前外星人的位置
-            # 少了这一步不会循环创建外星人
-            alien = Aliens(self)
-            # 算法难点??????????????????????
-            alien.x = alien_width + 2 * alien_width * alien_number
-            alien.rect.x = alien.x
-            self.aliens.add(alien)
+
+        # 计算屏幕可以容纳多少行外星人
+        # 统计飞船高度 也可以用self.ship.rect.height
+        ship_height = self.ship.image.get_height()
+        # 计算可以行距 减去第一行外星人的高度，及行间距为一个外星人 和最后外星人和飞船间空的一个一个外星人高度
+        available_space_y = self.settings.screen_height - (3 * alien_height) - ship_height
+        # 计算可以利用 行数即可以容纳多少行外星人
+        numbers_aliens_y = available_space_y // (2 * alien_height)
+        # 创建多行外星人
+        for number_alien in range(numbers_aliens_y + 1):
+            for alien_number in range(numbers_aliens_x + 1):
+                self._create_alien(alien_number, number_alien)
+
+    def _create_alien(self, alien_number, number_alien):
+        """创建多行外星人并将其放在当前行"""
+        # 设置当前外星人的位置
+        # 少了这一步不会循环创建外星人
+        alien = Aliens(self)
+        alien_width, alien_height = alien.rect.size
+        # 算法难点?????????????????????? 展示单行外星人数
+        alien.x = alien_width + 2 * alien_width * alien_number
+        # 将外星人x轴位置 坐标更新 相应 外星人坐标x轴也被更新了
+        alien.rect.x = alien.x
+        # 更新y轴才会多行显示 不然就是一行显示了
+        alien.rect.y = alien_height + 2 * alien_height * number_alien
+        self.aliens.add(alien)
 
     # 按键发射子弹
     def _fire_bullet(self):
@@ -77,7 +94,7 @@ class AlienInvasion:
         # 获取事件值为，左方向键
         elif event.key == pygame.K_LEFT:
             self.ship.moving_left = True
-        #test--------------------------
+        # test--------------------------
         elif event.key == pygame.K_UP:
             self.ship.moving_up = True
         elif event.key == pygame.K_DOWN:
@@ -159,7 +176,6 @@ class AlienInvasion:
         # 把外星人画出来
         self.aliens.draw(self.screen)
         pygame.display.flip()
-
 
     def run_game(self):
         """开始游戏的主循环"""
