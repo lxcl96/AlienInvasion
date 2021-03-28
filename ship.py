@@ -44,4 +44,13 @@ class Ship:
 
     def blitme(self):
         """在指定位置绘制飞船"""
-        self.screen.blit(self.image, self.rect) # 使用图片，位置来绘制飞船self.rect矩形对象，self.rect.midbottom 矩形位置
+        # 使用图片，位置来绘制飞船self.rect矩形对象，self.rect.midbottom 矩形位置
+        self.screen.blit(self.image, self.rect)
+
+    def center_ship(self):
+        """让飞船处于屏幕低端中央"""
+        self.rect.midbottom = self.screen_rect.midbottom
+        # 更新了飞船的位置 需要重新指定 飞船x轴y轴 为了其可以继续进行 满足小数位 移动
+        self.x = float(self.rect.x)
+        # 重置用于跟踪飞船确切位置的 x，y
+        self.y = float(self.rect.y)
