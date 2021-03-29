@@ -10,8 +10,8 @@ class GameStats:
         self.settings = ai_game.settings
         # 重置飞船 初始实例时 飞船数量等于settings中 飞船数量
         self.reset_status()
-        # 设置游戏运行标志
-        self.game_active = True
+        # 设置游戏运行标志 初始设为false
+        self.game_active = False
 
 
     def reset_status(self):

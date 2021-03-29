@@ -6,6 +6,7 @@ from game_stats import GameStats
 from ship import Ship
 from bullet import Bullet
 from alien import Aliens
+from button import Button
 
 
 
@@ -43,6 +44,10 @@ class AlienInvasion:
         self.aliens = pygame.sprite.Group()
         # 创建外星人函数
         self._create_fleet()
+
+        # 实例化按钮
+        self.play_button = Button(self, "Play")
+
 
     def _create_fleet(self):
         """创建外星人群"""
@@ -140,6 +145,12 @@ class AlienInvasion:
         elif event.key == pygame.K_DOWN:
             self.ship.moving_down = False
 
+    def _check_play_button(self, mouse_pos):
+        """在玩家单击Play按钮时开始新游戏"""
+        # collidepoint检查鼠标点击时位置是否在按钮区域内
+        if self.play_button.rect.collidepoint(mouse_pos):
+            self.stats.game_active = True
+
     def _check_events(self):
         """响应按键和鼠标事件函数"""
         # pygame.event.get()获取键盘或鼠标的操作，通过event来记录每一个操作
@@ -155,6 +166,12 @@ class AlienInvasion:
             # 此处为松开右方向键（KEYUP）
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
+            # 检测到鼠标事件
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                # get_pos() 返回一个元组其中包含了点击鼠标时的x轴和y轴
+                mouse_pos = pygame.mouse.get_pos()
+                # 检查返回的x，y轴是否在 button按钮中
+                self._check_play_button(mouse_pos)
 
     def _check_bullet_alien_collisions(self):
         """响应子弹和外星人碰撞，删除发生碰撞的子弹和外星人"""
@@ -283,6 +300,12 @@ class AlienInvasion:
             bullet.draw_bullet()
         # 把外星人画出来
         self.aliens.draw(self.screen)
+
+        # 如果游戏处于非运行状态 就绘制Play按钮
+        # 放在这不会被 背景 外星人等覆盖
+        if not self.stats.game_active:
+            self.play_button.draw_button()
+        # 显示屏幕
         pygame.display.flip()
 
     def run_game(self):

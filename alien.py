@@ -29,7 +29,7 @@ class Aliens(Sprite):
     def check_edges(self):
         """如果外星人位于屏幕边缘，就返回True"""
         screen_rect = self.screen.get_rect()
-        if self.rect.right >= (screen_rect.right) or self.rect.left <= 0:
+        if self.rect.right >= screen_rect.right or self.rect.left <= 0:
             return True
         else:
             return False
