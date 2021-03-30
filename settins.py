@@ -13,7 +13,7 @@ class Settings:
 
         # 飞船设置 速度为1.5 数量限制为 3
         self.ship_speed = 0.5
-        self.ship_limit = 1
+        self.ship_limit = 3
 
         # 子弹设置:速度1px，宽度3px，长度15px 颜色为
         self.bullet_speed = 1.5

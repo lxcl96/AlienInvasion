@@ -103,6 +103,22 @@ class AlienInvasion:
             # 将子弹编组
             self.bullets.add(new_bullet)
 
+    def _start_game(self):
+        """按p键开始游戏"""
+        if not self.stats.game_active:
+            # 游戏运行中隐藏鼠标光标 因为他碍眼 但是游戏结束后鼠标又不显示了 需要 再次设置
+            pygame.mouse.set_visible(False)
+            # 重置游戏信息 比如飞船个数,游戏运行状态,
+            self.stats.reset_status()
+            self.stats.game_active = True
+
+            # 清空余下的外星人和子弹
+            self.aliens.empty()
+            self.bullets.empty()
+
+            # 创建一群新的外星人 并且让飞船居中
+            self._create_fleet()
+            self.ship.center_ship()
     # 此处为按压方向键（KEYDOWN）
     def __check_keydown_events(self, event):
         # 获取事件值为，右方向键
@@ -121,6 +137,9 @@ class AlienInvasion:
             sys.exit()
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
+        # 按p键开始游戏
+        elif event.key == pygame.K_p:
+            self._start_game()
             # 以下方法只能发射三发子弹
             '''
             # 如果子弹存量大于0
@@ -147,9 +166,24 @@ class AlienInvasion:
 
     def _check_play_button(self, mouse_pos):
         """在玩家单击Play按钮时开始新游戏"""
-        # collidepoint检查鼠标点击时位置是否在按钮区域内
-        if self.play_button.rect.collidepoint(mouse_pos):
+        # collidepoint检查鼠标点击时位置是否在按钮区域内 且 游戏运行状态为False时 才会响应游戏点击
+        # 为什么要加上 两个判断条件？ 第一个是为了 实现 play按钮控制
+        # 第二个是为了防止 游戏处于运行中，用户不小心点击 按钮位置 导致游戏一直重置
+        if self.play_button.rect.collidepoint(mouse_pos) and not self.stats.game_active:
+            # 游戏运行中隐藏鼠标光标 因为他碍眼 但是游戏结束后鼠标又不显示了 需要 再次设置
+            pygame.mouse.set_visible(False)
+            # 重置游戏信息 比如飞船个数,游戏运行状态,
+            self.stats.reset_status()
             self.stats.game_active = True
+
+            # 清空余下的外星人和子弹
+            self.aliens.empty()
+            self.bullets.empty()
+
+            # 创建一群新的外星人 并且让飞船居中
+            self._create_fleet()
+            self.ship.center_ship()
+
 
     def _check_events(self):
         """响应按键和鼠标事件函数"""
@@ -266,6 +300,8 @@ class AlienInvasion:
         else:
             # 改变游戏运行状态
             self.stats.game_active = False
+            # 游戏结束设置 鼠标箭头非隐藏
+            pygame.mouse.set_visible(True)
 
     def _update_aliens(self):
         """更新外星人的移动位置"""
@@ -323,6 +359,9 @@ class AlienInvasion:
                 # 发射/更新子弹
                 self._update_bullets()
                 self._update_aliens()
+            # 下面注释掉的代码也可以实现游戏结束时 鼠标箭头再次显示出来
+            # else:
+            #     pygame.mouse.set_visible(True)
             # 更新屏幕
             self._update_screen()
 
