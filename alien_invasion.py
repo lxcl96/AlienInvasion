@@ -119,6 +119,10 @@ class AlienInvasion:
             # 创建一群新的外星人 并且让飞船居中
             self._create_fleet()
             self.ship.center_ship()
+
+            # 开始新游戏 重置 元素速度
+            self.settings.initialize_dynamic_settings()
+
     # 此处为按压方向键（KEYDOWN）
     def __check_keydown_events(self, event):
         # 获取事件值为，右方向键
@@ -183,6 +187,8 @@ class AlienInvasion:
             # 创建一群新的外星人 并且让飞船居中
             self._create_fleet()
             self.ship.center_ship()
+            # 开始新游戏 重置元素速度
+            self.settings.initialize_dynamic_settings()
 
 
     def _check_events(self):
@@ -221,7 +227,14 @@ class AlienInvasion:
         # 让程序等待 1s 后再执行
         if not self.aliens:
             # time.sleep(1)
+            # 清空剩余子弹
+            self.bullets.empty()
+            # 新建外星人群
             self._create_fleet()
+            # 增加游戏元素移动速度
+            # 需要注意清空玩一波外星人后 提升了 元素速度 但是 再次点击一次 play按钮时 这些元素速度并没有被重置 需要手动重置
+            self.settings.increase_speed()
+            print(self.settings.alien_speed)
 
     def _update_bullets(self):
         # 更新子弹位置，为pygame.sprite.group()函数
