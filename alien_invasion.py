@@ -7,7 +7,7 @@ from ship import Ship
 from bullet import Bullet
 from alien import Aliens
 from button import Button
-
+from scoreboard import Scoreboard
 
 
 class AlienInvasion:
@@ -47,6 +47,8 @@ class AlienInvasion:
 
         # 实例化按钮
         self.play_button = Button(self, "Play")
+        # 实例化记分牌
+        self.sb = Scoreboard(self)
 
 
     def _create_fleet(self):
@@ -122,6 +124,9 @@ class AlienInvasion:
 
             # 开始新游戏 重置 元素速度
             self.settings.initialize_dynamic_settings()
+            # 再次开始新游戏时 需要重置得分 不然刚开始上面显示的上一局的得分
+            self.sb.prep_score()
+
 
     # 此处为按压方向键（KEYDOWN）
     def __check_keydown_events(self, event):
@@ -189,6 +194,8 @@ class AlienInvasion:
             self.ship.center_ship()
             # 开始新游戏 重置元素速度
             self.settings.initialize_dynamic_settings()
+            # 再次开始新游戏时 需要重置得分 不然刚开始上面显示的上一局的得分
+            self.sb.prep_score()
 
 
     def _check_events(self):
@@ -221,6 +228,15 @@ class AlienInvasion:
         # 这里是将每个子弹rect与每个外星人rect进行比较返回一个 key=碰撞的子弹，value=碰撞的外星人 的字典
         #   两个实参True 让pygame删除发生碰撞的子弹（第一个true）和外星人（第二个True）
         collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
+        # 这种方法虽然也可以计算得分 但是如果子弹很大同时打到多个外星人也只会记一个人的得分，或者两个子弹打到同一个外星人
+        # 因此需要对得分的方法 进行优化 思路是：collisions是一个字典，key是子弹 value是外星人或者是外星人列表 (即可能是一个或多个)
+        #                                因此 可以计算每一个value的长度 来确定 一颗子弹打到了 多少外星人
+        if collisions:
+            for alien in collisions.values():
+                self.stats.score += self.settings.alien_points * len(alien)
+                # 数值发生了变化 需要重新生成一个surface 来覆盖 /////////////重要！！！！！
+                # 游戏结束了但是 得分数值没有重新绘制 刚开始会不变
+                self.sb.prep_score()
 
         # 为了保证外星人足够的多，需要在 self.aliens 为空时 再次生成外星人 self.aliens 为布尔类型
         # if len(self.aliens) == 0:
@@ -349,6 +365,9 @@ class AlienInvasion:
             bullet.draw_bullet()
         # 把外星人画出来
         self.aliens.draw(self.screen)
+
+        # 将得分显示出来
+        self.sb.show_score()
 
         # 如果游戏处于非运行状态 就绘制Play按钮
         # 放在这不会被 背景 外星人等覆盖

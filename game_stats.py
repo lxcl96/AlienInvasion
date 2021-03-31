@@ -18,3 +18,5 @@ class GameStats:
         """初始化在游戏运行期间可能变化 的统计信息"""
         # 此处统计剩下飞船数量
         self.ship_left = self.settings.ship_limit
+        # 显示实时得分
+        self.score = 0

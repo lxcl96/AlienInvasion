@@ -34,6 +34,9 @@ class Settings:
         """
         # 加快游戏节奏的速度
         self.speedup_scale = 1.1
+        # 随着游戏进行 越到后面的外星人分数越高
+        self.score_scale = 1.5
+
         # __init__()定义静态设置，下面进行动态设置
         self.initialize_dynamic_settings()
 
@@ -45,6 +48,8 @@ class Settings:
 
         # fleet_direction 为1代表向右 -1代表向左
         self.fleet_direction = 1
+        # 设定每一个外星人多少分 放在这个函数里 是为了每次开始新游戏时这个值都会重置
+        self.alien_points = 50
 
     def increase_speed(self):
         """提高速度设置 在整群外星人被消灭时 调用 加快游戏进度"""
@@ -52,3 +57,4 @@ class Settings:
         self.ship_speed *= self.speedup_scale
         self.bullet_speed *= self.speedup_scale
         self.alien_speed *= self.speedup_scale
+        self.alien_points = int(self.alien_points * self.score_scale)
