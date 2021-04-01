@@ -126,6 +126,16 @@ class AlienInvasion:
             self.settings.initialize_dynamic_settings()
             # 再次开始新游戏时 需要重置得分 不然刚开始上面显示的上一局的得分
             self.sb.prep_score()
+            # 再次开始新游戏时 需要重新绘制 剩余飞船
+            self.sb.prep_ships()
+            # 更新最高得分并且 将其绘制成 surface 此处不需要 只需要加在子弹碰撞检测处即可
+            # if self.stats.score > self.stats.high_score:
+            #     self.stats.high_score = self.stats.score
+            # self.sb.prep_high_score()
+
+            # 开始新游戏前 重置level 等级重置包含在 函数中了不需要在单独 添加了
+            # self.stats.level = 1
+            self.sb.prep_level()
 
 
     # 此处为按压方向键（KEYDOWN）
@@ -196,6 +206,15 @@ class AlienInvasion:
             self.settings.initialize_dynamic_settings()
             # 再次开始新游戏时 需要重置得分 不然刚开始上面显示的上一局的得分
             self.sb.prep_score()
+            # 再次开始新游戏时 需要重新绘制 剩余飞船
+            self.sb.prep_ships()
+            # 更新最高得分并且 将其绘制成 surface 此处不需要 只需要加在子弹碰撞检测处即可
+            # if self.stats.score > self.stats.high_score:
+            #     self.stats.high_score = self.stats.score
+            # self.sb.prep_high_score()
+            # 开始新游戏前 重置level
+            # self.stats.level = 1
+            self.sb.prep_level()
 
 
     def _check_events(self):
@@ -237,6 +256,11 @@ class AlienInvasion:
                 # 数值发生了变化 需要重新生成一个surface 来覆盖 /////////////重要！！！！！
                 # 游戏结束了但是 得分数值没有重新绘制 刚开始会不变
                 self.sb.prep_score()
+                # 更新最高得分并且 将其绘制成 surface 可以这样写 我们可以将其集成到 scoreboard 类中
+                # if self.stats.score > self.stats.high_score:
+                #     self.stats.high_score = self.stats.score
+                # self.sb.prep_high_score()
+                self.sb.check_high_score()
 
         # 为了保证外星人足够的多，需要在 self.aliens 为空时 再次生成外星人 self.aliens 为布尔类型
         # if len(self.aliens) == 0:
@@ -250,7 +274,9 @@ class AlienInvasion:
             # 增加游戏元素移动速度
             # 需要注意清空玩一波外星人后 提升了 元素速度 但是 再次点击一次 play按钮时 这些元素速度并没有被重置 需要手动重置
             self.settings.increase_speed()
-            print(self.settings.alien_speed)
+            self.stats.level += 1
+            self.sb.prep_level()
+            # print(self.settings.alien_speed)
 
     def _update_bullets(self):
         # 更新子弹位置，为pygame.sprite.group()函数
@@ -316,6 +342,7 @@ class AlienInvasion:
         if self.stats.ship_left > 0:
             # 将剩余飞船数量 -1
             self.stats.ship_left -= 1
+            self.sb.prep_ships()
             # 清空外星人和子弹
             self.bullets.empty()
             self.aliens.empty()
@@ -366,7 +393,7 @@ class AlienInvasion:
         # 把外星人画出来
         self.aliens.draw(self.screen)
 
-        # 将得分显示出来
+        # 将得分显示出来 / 最高得分/等级/飞船
         self.sb.show_score()
 
         # 如果游戏处于非运行状态 就绘制Play按钮

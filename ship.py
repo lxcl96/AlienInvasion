@@ -1,9 +1,13 @@
 import pygame
 # 将图像当作rect（矩形来处理）
-class Ship:
+from pygame.sprite import Sprite
+
+
+class Ship(Sprite):
     """管理飞船的类"""
     def __init__(self, ai_game):    # ai_game就是ai
         """初始化飞船并设置其初始位置"""
+        super().__init__()
         self.screen = ai_game.screen    # 获取主程序中的屏幕大小（ai.screen）
         self.settings = ai_game.settings
         # get_rect()是一个处理矩形图像的方法，返回值包含矩形的居中属性，用点表示面location1
